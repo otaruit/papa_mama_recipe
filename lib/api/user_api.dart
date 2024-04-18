@@ -19,9 +19,9 @@ final userAPIProvider = Provider((ref) {
 abstract class IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel);
   Future<model.Document> getUserData(String uid);
-  Future<List<model.Document>> searchUserByName(String name);
+  // Future<List<model.Document>> searchUserByName(String name);
   FutureEitherVoid updateUserData(UserModel userModel);
-  Stream<RealtimeMessage> getLatestUserProfileData();
+  // Stream<RealtimeMessage> getLatestUserProfileData();
   FutureEitherVoid followUser(UserModel user);
   FutureEitherVoid addToFollowing(UserModel user);
 }
@@ -66,18 +66,18 @@ class UserAPI implements IUserAPI {
     );
   }
 
-  @override
-  Future<List<model.Document>> searchUserByName(String name) async {
-    final documents = await _db.listDocuments(
-      databaseId: AppwriteConstants.databaseId,
-      collectionId: AppwriteConstants.usersCollection,
-      queries: [
-        Query.search('name', name),
-      ],
-    );
+  // @override
+  // Future<List<model.Document>> searchUserByName(String name) async {
+  //   final documents = await _db.listDocuments(
+  //     databaseId: AppwriteConstants.databaseId,
+  //     collectionId: AppwriteConstants.usersCollection,
+  //     queries: [
+  //       Query.search('name', name),
+  //     ],
+  //   );
 
-    return documents.documents;
-  }
+  //   return documents.documents;
+  // }
 
   @override
   FutureEitherVoid updateUserData(UserModel userModel) async {
@@ -101,12 +101,12 @@ class UserAPI implements IUserAPI {
     }
   }
 
-  @override
-  Stream<RealtimeMessage> getLatestUserProfileData() {
-    return _realtime.subscribe([
-      'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.usersCollection}.documents'
-    ]).stream;
-  }
+  // @override
+  // Stream<RealtimeMessage> getLatestUserProfileData() {
+  //   return _realtime.subscribe([
+  //     'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.usersCollection}.documents'
+  //   ]).stream;
+  // }
 
   @override
   FutureEitherVoid followUser(UserModel user) async {
@@ -116,7 +116,7 @@ class UserAPI implements IUserAPI {
         collectionId: AppwriteConstants.usersCollection,
         documentId: user.uid,
         data: {
-          'followers': user.followers,
+          'linkedUid': user.linkedUid,
         },
       );
       return right(null);
@@ -140,7 +140,7 @@ class UserAPI implements IUserAPI {
         collectionId: AppwriteConstants.usersCollection,
         documentId: user.uid,
         data: {
-          'following': user.following,
+          'linkedUid': user.linkedUid,
         },
       );
       return right(null);

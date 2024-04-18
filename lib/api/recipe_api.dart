@@ -6,37 +6,37 @@ import 'package:papa_mama_recipe/constants/appwrite_constants.dart';
 import 'package:papa_mama_recipe/core/failure.dart';
 import 'package:papa_mama_recipe/core/providers.dart';
 import 'package:papa_mama_recipe/core/type_defs.dart';
-import 'package:papa_mama_recipe/models/menu_model.dart';
+import 'package:papa_mama_recipe/models/recipe_model.dart';
 
-final menuAPIProvider = Provider((ref) {
-  return MenuAPI(
+final recipeAPIProvider = Provider((ref) {
+  return RecipeAPI(
     db: ref.watch(appwriteDatabaseProvider),
     realtime: ref.watch(appwriteRealtimeProvider),
   );
 });
 
-abstract class IMenuAPI {
-  FutureEither<Document> shareMenu(Menu menu);
-  Future<List<Document>> getMenus();
-  Stream<RealtimeMessage> getLatestMenu();
-  Future<Document> getMenuById(String id);
+abstract class IRecipeAPI {
+  FutureEither<Document> shareRecipe(Recipe recipe);
+  Future<List<Document>> getRecipes();
+  Stream<RealtimeMessage> getLatestRecipe();
+  Future<Document> getRecipeById(String id);
 }
 
-class MenuAPI implements IMenuAPI {
+class RecipeAPI implements IRecipeAPI {
   final Databases _db;
   final Realtime _realtime;
-  MenuAPI({required Databases db, required Realtime realtime})
+  RecipeAPI({required Databases db, required Realtime realtime})
       : _db = db,
         _realtime = realtime;
 
   @override
-  FutureEither<Document> shareMenu(Menu menu) async {
+  FutureEither<Document> shareRecipe(Recipe recipe) async {
     try {
       final document = await _db.createDocument(
         databaseId: AppwriteConstants.databaseId,
-        collectionId: AppwriteConstants.menusCollection,
+        collectionId: AppwriteConstants.recipesCollection,
         documentId: ID.unique(),
-        data: menu.toMap(),
+        data: recipe.toMap(),
       );
       return right(document);
     } on AppwriteException catch (e, st) {
@@ -52,34 +52,31 @@ class MenuAPI implements IMenuAPI {
   }
 
   @override
-  Future<List<Document>> getMenus() async {
+  Future<List<Document>> getRecipes() async {
     final documents = await _db.listDocuments(
       databaseId: AppwriteConstants.databaseId,
-      collectionId: AppwriteConstants.menusCollection,
+      collectionId: AppwriteConstants.recipesCollection,
       queries: [
-        Query.orderAsc('dayOfTheWeek'),
-        Query.between('dayOfTheWeek', 0, 6)
+        // Query.orderAsc('dayOfTheWeek'),
+        // Query.between('dayOfTheWeek', 0, 6)
       ],
     );
     return documents.documents;
   }
 
   @override
-  Stream<RealtimeMessage> getLatestMenu() {
+  Stream<RealtimeMessage> getLatestRecipe() {
     return _realtime.subscribe([
-      'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.menusCollection}.documents'
+      'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.recipesCollection}.documents'
     ]).stream;
   }
-  
+
   @override
-  Future<Document> getMenuById(String id) {
+  Future<Document> getRecipeById(String id) {
     return _db.getDocument(
       databaseId: AppwriteConstants.databaseId,
-      collectionId: AppwriteConstants.menusCollection,
+      collectionId: AppwriteConstants.recipesCollection,
       documentId: id,
     );
   }
-
-
-  
 }

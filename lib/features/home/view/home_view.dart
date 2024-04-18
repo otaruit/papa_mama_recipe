@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:papa_mama_recipe/constants/assets_constants.dart';
 import 'package:papa_mama_recipe/constants/ui_constants.dart';
-import 'package:papa_mama_recipe/features/menu/widget/create_menu_view.dart';
+import 'package:papa_mama_recipe/core/day_of_the_week_get.dart';
+import 'package:papa_mama_recipe/features/menu/view/create_menu_view.dart';
+import 'package:papa_mama_recipe/models/menu_model.dart';
 import 'package:papa_mama_recipe/theme/pallete.dart';
-
 
 class HomeView extends StatefulWidget {
   static route() => MaterialPageRoute(
@@ -27,8 +28,16 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  onCreateTweet() {
-    Navigator.push(context, CreateMenuScreen.route());
+  onCreateMenu() {
+    final passMenu = Menu(
+        id: '',
+        mainDish: '',
+        sideDish: '',
+        soup: '',
+        others: '',
+        dayOfTheWeek: 0,
+        uid: '');
+    Navigator.push(context, CreateMenuScreen.route(passMenu));
   }
 
   @override
@@ -38,44 +47,40 @@ class _HomeViewState extends State<HomeView> {
       body: IndexedStack(
         index: _page,
         children: UIConstants.bottomTabBarPages,
+        
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: onCreateTweet,
-        child: const Icon(
-          Icons.add,
-          color: Pallete.whiteColor,
-          size: 28,
-        ),
-      ),
+    
       bottomNavigationBar: CupertinoTabBar(
         currentIndex: _page,
         onTap: onPageChange,
         backgroundColor: Pallete.backgroundColor,
         items: [
           BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              _page == 0
-                  ? AssetsConstants.homeFilledIcon
-                  : AssetsConstants.homeOutlinedIcon,
-              color: Pallete.whiteColor,
-            ),
+                icon: _page == 0
+                    ? Icon(Icons.event, size: 30)
+                    : Icon(
+                        Icons.event_available_outlined,
+                        size: 30,
+                        color: Pallete.redColor,
+                      ),
+                label: 'らいしゅう',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              AssetsConstants.searchIcon,
-              color: Pallete.whiteColor,
-            ),
+                icon: Icon(
+                  Icons.local_dining,
+                  size: 30,
+                  color: Pallete.redColor,
+                ),
+                label: 'レシピ',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              _page == 2
-                  ? AssetsConstants.notifFilledIcon
-                  : AssetsConstants.notifOutlinedIcon,
-              color: Pallete.whiteColor,
-            ),
-          ),
-        ],
-      ),
-    );
+                icon: Icon(
+                  Icons.format_list_bulleted,
+                  size: 30,
+                  color: Pallete.redColor,
+                ),
+                label: 'かいものリスト',
+              )
+            ]));
   }
 }

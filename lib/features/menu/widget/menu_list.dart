@@ -20,7 +20,20 @@ class MenuList extends ConsumerWidget {
                     if (data.events.contains(
                       'databases.*.collections.${AppwriteConstants.menusCollection}.documents.*.create',
                     )) {
-                      menus.insert(0, Menu.fromMap(data.payload));
+                      final startingPoint =
+                          data.events[0].lastIndexOf('documents.');
+                      final endPoint = data.events[0].lastIndexOf('.create');
+                      final menuId = data.events[0]
+                          .substring(startingPoint + 10, endPoint);
+
+                      var menu =
+                          menus.where((element) => element.id == menuId).first;
+
+                      final menuIndex = menus.indexOf(menu);
+                      menus.removeWhere((element) => element.id == menuId);
+
+                      menu = Menu.fromMap(data.payload);
+                      menus.insert(menuIndex, menu);
                     } else if (data.events.contains(
                       'databases.*.collections.${AppwriteConstants.menusCollection}.documents.*.update',
                     )) {

@@ -63,14 +63,8 @@ class AuthController extends StateNotifier<bool> {
       (r) async {
         UserModel userModel = UserModel(
           email: email,
-          name: getNameFromEmail(email),
-          followers: const [],
-          following: const [],
-          profilePic: '',
-          bannerPic: '',
-          uid: r.$id,
-          bio: '',
-          isTwitterBlue: false,
+          uid: '',
+          linkedUid: '',
         );
         final res2 = await _userAPI.saveUserData(userModel);
         res2.fold((l) => showSnackBar(context, l.message), (r) {
