@@ -26,8 +26,8 @@ class Menu {
   Menu copyWith({
     String? id,
     int? dayOfTheWeek,
-    String? mainMenu,
-    String? sideMenu,
+    String? mainDish,
+    String? sideDish,
     String? soup,
     String? others,
     String? uid,
@@ -35,8 +35,8 @@ class Menu {
     return Menu(
       id: id ?? this.id,
       dayOfTheWeek: dayOfTheWeek ?? this.dayOfTheWeek,
-      mainDish: mainMenu ?? this.mainDish,
-      sideDish: sideMenu ?? this.sideDish,
+      mainDish: mainDish ?? this.mainDish,
+      sideDish: sideDish ?? this.sideDish,
       soup: soup ?? this.soup,
       others: others ?? this.others,
       uid: uid ?? this.uid,
@@ -46,8 +46,8 @@ class Menu {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'dayOfTheWeek': dayOfTheWeek,
-      'mainMenu': mainDish,
-      'sideMenu': sideDish,
+      'mainDish': mainDish,
+      'sideDish': sideDish,
       'soup': soup,
       'others': others,
       'uid': uid,
@@ -58,8 +58,8 @@ class Menu {
     return Menu(
       id: map['\$id'] ?? '',
       dayOfTheWeek: map['dayOfTheWeek'] ?? 0,
-      mainDish: map['mainMenu'] ?? '',
-      sideDish: map['sideMenu'] ?? '',
+      mainDish: map['mainDish'] ?? '',
+      sideDish: map['sideDish'] ?? '',
       soup: map['soup'] ?? '',
       others: map['others'] ?? '',
       uid: map['uid'] ?? '',
@@ -72,7 +72,7 @@ class Menu {
 
   @override
   String toString() {
-    return 'Menu(id: $id, dayOfTheWeek: $dayOfTheWeek, mainMenu: $mainDish, sideMenu: $sideDish, soup: $soup, others: $others, uid: $uid)';
+    return 'Menu(id: $id, dayOfTheWeek: $dayOfTheWeek, mainDish: $mainDish, sideDish: $sideDish, soup: $soup, others: $others, uid: $uid)';
   }
 
   @override

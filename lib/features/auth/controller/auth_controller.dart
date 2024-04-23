@@ -1,4 +1,4 @@
-import 'package:appwrite/models.dart' as model;
+import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:papa_mama_recipe/api/auth_api.dart';
@@ -20,8 +20,8 @@ final authControllerProvider =
 
 final currentUserDetailsProvider = FutureProvider((ref) {
   final currentUserId = ref.watch(currentUserAccountProvider).value!.$id;
-  // final userDetails = ref.watch(userDetailsProvider(currentUserId));
-  return currentUserId;
+  final userDetails = ref.watch(userDetailsProvider(currentUserId));
+  return userDetails.value;
 });
 
 final userDetailsProvider = FutureProvider.family((ref, String uid) {
@@ -45,7 +45,7 @@ class AuthController extends StateNotifier<bool> {
         super(false);
   // state = isLoading
 
-  Future<model.User?> currentUser() => _authAPI.currentUserAccount();
+  Future<User?> currentUser() => _authAPI.currentUserAccount();
 
   void signUp({
     required String email,
@@ -63,8 +63,9 @@ class AuthController extends StateNotifier<bool> {
       (r) async {
         UserModel userModel = UserModel(
           email: email,
-          uid: '',
+            uid: r.$id,
           linkedUid: '',
+            lastLoginDateTime: DateTime.now()
         );
         final res2 = await _userAPI.saveUserData(userModel);
         res2.fold((l) => showSnackBar(context, l.message), (r) {

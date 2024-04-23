@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:papa_mama_recipe/constants/assets_constants.dart';
 import 'package:papa_mama_recipe/constants/ui_constants.dart';
-import 'package:papa_mama_recipe/core/day_of_the_week_get.dart';
 import 'package:papa_mama_recipe/features/menu/view/create_menu_view.dart';
 import 'package:papa_mama_recipe/models/menu_model.dart';
 import 'package:papa_mama_recipe/theme/pallete.dart';

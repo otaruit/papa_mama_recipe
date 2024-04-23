@@ -82,7 +82,6 @@ class _CreateMenuScreenState extends ConsumerState<CreateMenuScreen> {
 
   Widget _buildDropdownSet(String label, TextEditingController controller) {
     List<String> dropdownItems = ['Option 1', 'Option 2', 'Option 3'];
-    String? selectedValue = controller.text.isNotEmpty ? controller.text : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

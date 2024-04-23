@@ -21,7 +21,7 @@ abstract class IUserAPI {
   Future<model.Document> getUserData(String uid);
   // Future<List<model.Document>> searchUserByName(String name);
   FutureEitherVoid updateUserData(UserModel userModel);
-  // Stream<RealtimeMessage> getLatestUserProfileData();
+  Stream<RealtimeMessage> getLatestUserProfileData();
   FutureEitherVoid followUser(UserModel user);
   FutureEitherVoid addToFollowing(UserModel user);
 }
@@ -101,12 +101,12 @@ class UserAPI implements IUserAPI {
     }
   }
 
-  // @override
-  // Stream<RealtimeMessage> getLatestUserProfileData() {
-  //   return _realtime.subscribe([
-  //     'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.usersCollection}.documents'
-  //   ]).stream;
-  // }
+  @override
+  Stream<RealtimeMessage> getLatestUserProfileData() {
+    return _realtime.subscribe([
+      'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.usersCollection}.documents'
+    ]).stream;
+  }
 
   @override
   FutureEitherVoid followUser(UserModel user) async {

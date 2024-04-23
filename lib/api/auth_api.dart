@@ -16,7 +16,7 @@ abstract class IAuthAPI {
     required String email,
     required String password,
   });
-  FutureEither<model.Session> login({
+  FutureEither<model.User> login({
     required String email,
     required String password,
   });
@@ -63,7 +63,7 @@ class AuthAPI implements IAuthAPI {
   }
 
   @override
-  FutureEither<model.Session> login({
+  FutureEither<model.User> login({
     required String email,
     required String password,
   }) async {
@@ -72,7 +72,7 @@ class AuthAPI implements IAuthAPI {
         email: email,
         password: password,
       );
-      return right(session);
+      return right(session as model.User);
     } on AppwriteException catch (e, stackTrace) {
       return left(
         Failure(e.message ?? 'Some unexpected error occurred', stackTrace),
