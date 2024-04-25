@@ -54,7 +54,6 @@ class RecipeController extends StateNotifier<bool> {
     required BuildContext context,
   }) async {
     state = true;
-    final user = _ref.read(currentUserDetailsProvider).value!;
     Recipe recipeEntry = recipe.copyWith();
     final res = await _recipeAPI.shareRecipe(recipeEntry);
     res.fold((l) => showSnackBar(context, l.message), (r) {});

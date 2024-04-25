@@ -3,24 +3,41 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:papa_mama_recipe/common/error_page.dart';
 import 'package:papa_mama_recipe/common/loading_page.dart';
 import 'package:papa_mama_recipe/constants/appwrite_constants.dart';
-import 'package:papa_mama_recipe/constants/ui_constants.dart';
 import 'package:papa_mama_recipe/features/recipe/controller/recipe_controller.dart';
 import 'package:papa_mama_recipe/features/recipe/widget/recipe_card.dart';
 import 'package:papa_mama_recipe/models/recipe_model.dart';
 
-class RecipeList extends ConsumerWidget {
+class RecipeList extends StatefulWidget {
   const RecipeList({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    TextEditingController searchController = TextEditingController();
+  _RecipeListState createState() => _RecipeListState();
+}
 
-    String _extractRecipeIdFromEvent(String event) {
-      final startingPoint = event.lastIndexOf('documents.');
-      final endPoint = event.lastIndexOf('.create');
-      return event.substring(startingPoint + 10, endPoint);
-    }
+class _RecipeListState extends State<RecipeList> {
+  late TextEditingController searchController;
+  String selectedCategory = 'メイン';
 
+  @override
+  void initState() {
+    super.initState();
+    searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  String _extractRecipeIdFromEvent(String event) {
+    final startingPoint = event.lastIndexOf('documents.');
+    final endPoint = event.lastIndexOf('.create');
+    return event.substring(startingPoint + 10, endPoint);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('レシピリスト'),
@@ -69,104 +86,161 @@ class RecipeList extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
-                CustomButton(
-                  label: 'メイン',
-                  color: Colors.blue,
-                  onPressed: () {},
+                Expanded(
+                  child: Row(
+                    children: [
+                      Radio(
+                        value: 'メイン',
+                        groupValue: selectedCategory,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedCategory = value.toString();
+                          });
+                        },
+                      ),
+                      Text('メイン'),
+                    ],
+                  ),
                 ),
-                SizedBox(width: 8),
-                CustomButton(
-                  label: 'サイド',
-                  color: Colors.red,
-                  onPressed: () {
-                    // Handle 'メイン' button press
-                  },
+                Expanded(
+                  child: Row(
+                    children: [
+                      Radio(
+                        value: 'サイド',
+                        groupValue: selectedCategory,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedCategory = value.toString();
+                          });
+                        },
+                      ),
+                      Text('サイド'),
+                    ],
+                  ),
                 ),
-                SizedBox(width: 8),
-                CustomButton(
-                  label: 'スープ',
-                  color: Colors.green,
-                  onPressed: () {
-                    // Handle 'メイン' button press
-                  },
+                Expanded(
+                  child: Row(
+                    children: [
+                      Radio(
+                        value: 'スープ',
+                        groupValue: selectedCategory,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedCategory = value.toString();
+                          });
+                        },
+                      ),
+                      Text('スープ'),
+                    ],
+                  ),
                 ),
-                SizedBox(width: 8),
-                CustomButton(
-                  label: 'その他',
-                  color: Colors.yellow,
-                  onPressed: () {
-                    // Handle 'メイン' button press
-                  },
+                Expanded(
+                  child: Row(
+                    children: [
+                      Radio(
+                        value: 'その他',
+                        groupValue: selectedCategory,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedCategory = value.toString();
+                          });
+                        },
+                      ),
+                      Text('その他'),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
           Expanded(
-            child: ref.watch(getRecipesProvider).when(
-                  data: (recipes) {
-                    return ref.watch(getLatestRecipeProvider).when(
-                          data: (data) {
-                            if (data.events.contains(
-                              'databases.*.collections.${AppwriteConstants.recipesCollection}.documents.*.create',
-                            )) {
-                              final recipeId =
-                                  _extractRecipeIdFromEvent(data.events[0]);
-
-                              var recipe = recipes.firstWhere(
-                                  (element) => element.id == recipeId);
-                              final recipeIndex = recipes.indexOf(recipe);
-                              recipes.removeWhere(
-                                  (element) => element.id == recipeId);
-
-                              recipe = Recipe.fromMap(data.payload);
-                              recipes.insert(recipeIndex, recipe);
-                            } else if (data.events.contains(
-                              'databases.*.collections.${AppwriteConstants.recipesCollection}.documents.*.update',
-                            )) {
-                              final recipeId =
-                                  _extractRecipeIdFromEvent(data.events[0]);
-                              var recipe = recipes.firstWhere(
-                                  (element) => element.id == recipeId);
-                              final recipeIndex = recipes.indexOf(recipe);
-                              recipes.removeWhere(
-                                  (element) => element.id == recipeId);
-
-                              recipe = Recipe.fromMap(data.payload);
-                              recipes.insert(recipeIndex, recipe);
-                            }
-
-                            return ListView.builder(
-                              itemCount: recipes.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final recipe = recipes[index];
-                                return RecipeCard(recipe: recipe);
-                              },
-                            );
-                          },
-                          error: (error, stackTrace) => ErrorText(
-                            error: error.toString(),
-                          ),
-                          loading: () {
-                            return ListView.builder(
-                              itemCount: recipes.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final recipe = recipes[index];
-                                return RecipeCard(recipe: recipe);
-                              },
-                            );
-                          },
-                        );
-                  },
-                  error: (error, stackTrace) => ErrorText(
-                    error: error.toString(),
-                  ),
-                  loading: () => const Loader(),
-                ),
-          )
+            child: YourRecipeListWidget(
+              selectedCategory: selectedCategory,
+            ),
+          ),
         ],
       ),
     );
   }
+}
 
+class YourRecipeListWidget extends StatelessWidget {
+  final String selectedCategory;
 
+  const YourRecipeListWidget({Key? key, required this.selectedCategory})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, _) {
+        return ref.watch(getRecipesProvider).when(
+              data: (recipes) {
+                return ref.watch(getLatestRecipeProvider).when(
+                      data: (data) {
+                        if (data.events.contains(
+                          'databases.*.collections.${AppwriteConstants.recipesCollection}.documents.*.create',
+                        )) {
+                          final recipeId =
+                              _extractRecipeIdFromEvent(data.events[0]);
+
+                          var recipe = recipes
+                              .firstWhere((element) => element.id == recipeId);
+                          final recipeIndex = recipes.indexOf(recipe);
+                          recipes
+                              .removeWhere((element) => element.id == recipeId);
+
+                          recipe = Recipe.fromMap(data.payload);
+                          recipes.insert(recipeIndex, recipe);
+                        } else if (data.events.contains(
+                          'databases.*.collections.${AppwriteConstants.recipesCollection}.documents.*.update',
+                        )) {
+                          final recipeId =
+                              _extractRecipeIdFromEvent(data.events[0]);
+                          var recipe = recipes
+                              .firstWhere((element) => element.id == recipeId);
+                          final recipeIndex = recipes.indexOf(recipe);
+                          recipes
+                              .removeWhere((element) => element.id == recipeId);
+
+                          recipe = Recipe.fromMap(data.payload);
+                          recipes.insert(recipeIndex, recipe);
+                        }
+
+                        return ListView.builder(
+                          itemCount: recipes.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final recipe = recipes[index];
+                            return RecipeCard(recipe: recipe);
+                          },
+                        );
+                      },
+                      error: (error, stackTrace) => ErrorText(
+                        error: error.toString(),
+                      ),
+                      loading: () {
+                        return ListView.builder(
+                          itemCount: recipes.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final recipe = recipes[index];
+                            return RecipeCard(recipe: recipe);
+                          },
+                        );
+                      },
+                    );
+              },
+              error: (error, stackTrace) => ErrorText(
+                error: error.toString(),
+              ),
+              loading: () => const Loader(),
+            );
+      },
+    );
+  }
+
+  String _extractRecipeIdFromEvent(String event) {
+    final startingPoint = event.lastIndexOf('documents.');
+    final endPoint = event.lastIndexOf('.create');
+    return event.substring(startingPoint + 10, endPoint);
+  }
 }

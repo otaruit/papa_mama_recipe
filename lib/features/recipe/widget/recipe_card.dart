@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:papa_mama_recipe/core/day_of_the_week_get.dart';
-import 'package:papa_mama_recipe/features/recipe/view/create_recipe_view.dart';
+import 'package:papa_mama_recipe/features/recipe/view/edit_recipe_view.dart';
 import 'package:papa_mama_recipe/models/recipe_model.dart';
 import 'package:papa_mama_recipe/theme/pallete.dart';
 

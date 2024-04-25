@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:papa_mama_recipe/common/loading_page.dart';
 import 'package:papa_mama_recipe/features/auth/controller/auth_controller.dart';
 import 'package:papa_mama_recipe/features/settings/controller/settings_controller.dart';
 import 'package:papa_mama_recipe/models/user_model.dart';
