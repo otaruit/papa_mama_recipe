@@ -16,6 +16,7 @@ class RecipeList extends StatefulWidget {
 
 class _RecipeListState extends State<RecipeList> {
   late TextEditingController searchController;
+  late int recipeType = 0;
   String selectedCategory = 'メイン';
 
   @override
@@ -35,6 +36,49 @@ class _RecipeListState extends State<RecipeList> {
     final endPoint = event.lastIndexOf('.create');
     return event.substring(startingPoint + 10, endPoint);
   }
+
+  Widget _buildRadioButton(String label, int index) {
+    Color? buttonColor;
+    switch (index) {
+      case 0:
+        buttonColor = recipeType == 0 ? Colors.red : Colors.grey[300]; // メイン
+        break;
+      case 1:
+        buttonColor = recipeType == 1 ? Colors.blue : Colors.grey[300]; // サイド
+        break;
+      case 2:
+        buttonColor = recipeType == 2 ? Colors.green : Colors.grey[300]; // スープ
+        break;
+      case 3:
+        buttonColor = recipeType == 3 ? Colors.orange : Colors.grey[300]; // その他
+        break;
+      default:
+        buttonColor = Colors.grey[300]; // デフォルトは灰色
+    }
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          recipeType = index;
+        });
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: buttonColor,
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: recipeType == index ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,74 +126,21 @@ class _RecipeListState extends State<RecipeList> {
               ),
             ),
           ),
+          const Text(
+            'レシピ種別',
+            textAlign: TextAlign.left,
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Radio(
-                        value: 'メイン',
-                        groupValue: selectedCategory,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCategory = value.toString();
-                          });
-                        },
-                      ),
-                      Text('メイン'),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Radio(
-                        value: 'サイド',
-                        groupValue: selectedCategory,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCategory = value.toString();
-                          });
-                        },
-                      ),
-                      Text('サイド'),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Radio(
-                        value: 'スープ',
-                        groupValue: selectedCategory,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCategory = value.toString();
-                          });
-                        },
-                      ),
-                      Text('スープ'),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Radio(
-                        value: 'その他',
-                        groupValue: selectedCategory,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedCategory = value.toString();
-                          });
-                        },
-                      ),
-                      Text('その他'),
-                    ],
-                  ),
-                ),
+                _buildRadioButton('メイン', 0),
+                const SizedBox(width: 8),
+                _buildRadioButton('サイド', 1),
+                const SizedBox(width: 8),
+                _buildRadioButton('スープ', 2),
+                const SizedBox(width: 8),
+                _buildRadioButton('その他', 3),
               ],
             ),
           ),

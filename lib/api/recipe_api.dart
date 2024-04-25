@@ -32,10 +32,10 @@ class RecipeAPI implements IRecipeAPI {
   @override
   FutureEither<Document> shareRecipe(Recipe recipe) async {
     try {
-      final document = await _db.createDocument(
+      final document = await _db.updateDocument(
         databaseId: AppwriteConstants.databaseId,
         collectionId: AppwriteConstants.recipesCollection,
-        documentId: ID.unique(),
+        documentId: recipe.id,
         data: recipe.toMap(),
       );
       return right(document);
