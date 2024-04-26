@@ -18,8 +18,9 @@ final recipeAPIProvider = Provider((ref) {
 abstract class IRecipeAPI {
   FutureEither<Document> shareRecipe(Recipe recipe);
   Future<List<Document>> getRecipes();
-  Stream<RealtimeMessage> getLatestRecipe();
+  Stream<List<Document>> watchRecipesRealtime();
   Future<Document> getRecipeById(String id);
+  Future<List<Document>> searchRecipesByName(String recipeName);
 }
 
 class RecipeAPI implements IRecipeAPI {
@@ -28,6 +29,19 @@ class RecipeAPI implements IRecipeAPI {
   RecipeAPI({required Databases db, required Realtime realtime})
       : _db = db,
         _realtime = realtime;
+
+  @override
+  Future<List<Document>> searchRecipesByName(String recipeName) async {
+    final documents = await _db.listDocuments(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.usersCollection,
+      queries: [
+        Query.search('recipeName', recipeName),
+      ],
+    );
+
+    return documents.documents;
+  }
 
   @override
   FutureEither<Document> shareRecipe(Recipe recipe) async {
@@ -64,12 +78,6 @@ class RecipeAPI implements IRecipeAPI {
     return documents.documents;
   }
 
-  @override
-  Stream<RealtimeMessage> getLatestRecipe() {
-    return _realtime.subscribe([
-      'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.recipesCollection}.documents'
-    ]).stream;
-  }
 
   @override
   Future<Document> getRecipeById(String id) {
@@ -78,5 +86,17 @@ class RecipeAPI implements IRecipeAPI {
       collectionId: AppwriteConstants.recipesCollection,
       documentId: id,
     );
+  }
+  
+  @override
+  Stream<List<Document>> watchRecipesRealtime() {
+    final channel =
+        _realtime.subscribe(['database.your_database_id.collections.recipes']);
+
+    return channel.stream.map<List<Document>>((message) {
+      final List<Document> documents =
+          (message as RealtimeMessage).payload as List<Document>;
+      return documents;
+    });
   }
 }

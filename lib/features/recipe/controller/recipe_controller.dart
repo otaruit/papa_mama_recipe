@@ -1,3 +1,4 @@
+import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:papa_mama_recipe/api/recipe_api.dart';
@@ -19,15 +20,16 @@ final getRecipesProvider = FutureProvider((ref) {
   return recipeController.getRecipes();
 });
 
-final getLatestRecipeProvider = StreamProvider((ref) {
+final watchRecipesRealtimeProvider = StreamProvider((ref) {
   final recipeAPI = ref.watch(recipeAPIProvider);
-  return recipeAPI.getLatestRecipe();
+  return recipeAPI.watchRecipesRealtime();
 });
 
 final getRecipeByIdProvider = FutureProvider.family((ref, String id) async {
   final recipeController = ref.watch(recipeControllerProvider.notifier);
   return recipeController.getRecipeById(id);
 });
+
 
 class RecipeController extends StateNotifier<bool> {
   final RecipeAPI _recipeAPI;
@@ -38,6 +40,15 @@ class RecipeController extends StateNotifier<bool> {
   })  : _ref = ref,
         _recipeAPI = recipeAPI,
         super(false);
+
+  Stream<List<Document>> watchRecipesRealtime() {
+    return _recipeAPI.watchRecipesRealtime();
+  }
+
+  Future<List<Recipe>> searchRecipesByName(String recipeName) async {
+    final users = await _recipeAPI.searchRecipesByName(recipeName);
+    return users.map((e) => Recipe.fromMap(e.data)).toList();
+  }
 
   Future<List<Recipe>> getRecipes() async {
     final recipeList = await _recipeAPI.getRecipes();

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:papa_mama_recipe/common/error_page.dart';
 import 'package:papa_mama_recipe/common/loading_page.dart';
-import 'package:papa_mama_recipe/constants/appwrite_constants.dart';
 import 'package:papa_mama_recipe/features/recipe/controller/recipe_controller.dart';
 import 'package:papa_mama_recipe/features/recipe/widget/recipe_card.dart';
-import 'package:papa_mama_recipe/models/recipe_model.dart';
 
 class RecipeList extends StatefulWidget {
   const RecipeList({Key? key}) : super(key: key);
@@ -79,7 +77,6 @@ class _RecipeListState extends State<RecipeList> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,19 +113,16 @@ class _RecipeListState extends State<RecipeList> {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      // 検索ボタンの処理を記述
-                    },
-                    icon: Icon(Icons.search),
-                  ),
                 ],
               ),
             ),
           ),
-          const Text(
-            'レシピ種別',
-            textAlign: TextAlign.left,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'レシピ種別',
+              textAlign: TextAlign.left,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -152,86 +146,5 @@ class _RecipeListState extends State<RecipeList> {
         ],
       ),
     );
-  }
-}
-
-class YourRecipeListWidget extends StatelessWidget {
-  final String selectedCategory;
-
-  const YourRecipeListWidget({Key? key, required this.selectedCategory})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, _) {
-        return ref.watch(getRecipesProvider).when(
-              data: (recipes) {
-                return ref.watch(getLatestRecipeProvider).when(
-                      data: (data) {
-                        if (data.events.contains(
-                          'databases.*.collections.${AppwriteConstants.recipesCollection}.documents.*.create',
-                        )) {
-                          final recipeId =
-                              _extractRecipeIdFromEvent(data.events[0]);
-
-                          var recipe = recipes
-                              .firstWhere((element) => element.id == recipeId);
-                          final recipeIndex = recipes.indexOf(recipe);
-                          recipes
-                              .removeWhere((element) => element.id == recipeId);
-
-                          recipe = Recipe.fromMap(data.payload);
-                          recipes.insert(recipeIndex, recipe);
-                        } else if (data.events.contains(
-                          'databases.*.collections.${AppwriteConstants.recipesCollection}.documents.*.update',
-                        )) {
-                          final recipeId =
-                              _extractRecipeIdFromEvent(data.events[0]);
-                          var recipe = recipes
-                              .firstWhere((element) => element.id == recipeId);
-                          final recipeIndex = recipes.indexOf(recipe);
-                          recipes
-                              .removeWhere((element) => element.id == recipeId);
-
-                          recipe = Recipe.fromMap(data.payload);
-                          recipes.insert(recipeIndex, recipe);
-                        }
-
-                        return ListView.builder(
-                          itemCount: recipes.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final recipe = recipes[index];
-                            return RecipeCard(recipe: recipe);
-                          },
-                        );
-                      },
-                      error: (error, stackTrace) => ErrorText(
-                        error: error.toString(),
-                      ),
-                      loading: () {
-                        return ListView.builder(
-                          itemCount: recipes.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            final recipe = recipes[index];
-                            return RecipeCard(recipe: recipe);
-                          },
-                        );
-                      },
-                    );
-              },
-              error: (error, stackTrace) => ErrorText(
-                error: error.toString(),
-              ),
-              loading: () => const Loader(),
-            );
-      },
-    );
-  }
-
-  String _extractRecipeIdFromEvent(String event) {
-    final startingPoint = event.lastIndexOf('documents.');
-    final endPoint = event.lastIndexOf('.create');
-    return event.substring(startingPoint + 10, endPoint);
   }
 }
