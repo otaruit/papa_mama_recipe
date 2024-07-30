@@ -20,7 +20,7 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        primary: color,
+        iconColor: color,
         padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -49,7 +49,8 @@ class UIConstants {
   }
 
   static List<Widget> bottomTabBarPages = [
-    MenuList(),
+    const MenuList(weekDecision: 0),
+    const MenuList(weekDecision: 1),
     RecipeList(),
     EditSettingsScreen()
   ];

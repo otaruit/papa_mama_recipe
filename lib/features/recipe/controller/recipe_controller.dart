@@ -1,9 +1,7 @@
-import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:papa_mama_recipe/api/recipe_api.dart';
 import 'package:papa_mama_recipe/core/utils.dart';
-import 'package:papa_mama_recipe/features/auth/controller/auth_controller.dart';
 import 'package:papa_mama_recipe/models/recipe_model.dart';
 
 final recipeControllerProvider = StateNotifierProvider<RecipeController, bool>(
@@ -20,16 +18,34 @@ final getRecipesProvider = FutureProvider((ref) {
   return recipeController.getRecipes();
 });
 
-final watchRecipesRealtimeProvider = StreamProvider((ref) {
-  final recipeAPI = ref.watch(recipeAPIProvider);
-  return recipeAPI.watchRecipesRealtime();
+final getLatestRecipesProvider = StreamProvider((ref) {
+  final tweetAPI = ref.watch(recipeAPIProvider);
+  return tweetAPI.getLatestRecipes();
 });
 
-final getRecipeByIdProvider = FutureProvider.family((ref, String id) async {
-  final recipeController = ref.watch(recipeControllerProvider.notifier);
-  return recipeController.getRecipeById(id);
-});
+final searchRecipesProvider =
+    FutureProvider.family<List<Recipe>, SearchType<String, int>>(
+  (ref, searchType) async {
+    final recipeName = searchType.recipeName;
+    final recipeType = searchType.recipeType;
+    final recipeController = ref.watch(recipeControllerProvider.notifier);
+    final recipes =
+        await recipeController.searchRecipes(recipeName, recipeType);
+    return recipes;
+  },
+);
 
+class SearchType<String, int> {
+  late final String recipeName;
+  late final int recipeType;
+
+  SearchType(String searchWord, int recipeType);
+}
+
+// final watchRecipesRealtimeProvider = StreamProvider((ref) {
+//   final recipeAPI = ref.watch(recipeAPIProvider);
+//   return recipeAPI.watchRecipesRealtime();
+// });
 
 class RecipeController extends StateNotifier<bool> {
   final RecipeAPI _recipeAPI;
@@ -41,23 +57,13 @@ class RecipeController extends StateNotifier<bool> {
         _recipeAPI = recipeAPI,
         super(false);
 
-  Stream<List<Document>> watchRecipesRealtime() {
-    return _recipeAPI.watchRecipesRealtime();
-  }
-
-  Future<List<Recipe>> searchRecipesByName(String recipeName) async {
-    final users = await _recipeAPI.searchRecipesByName(recipeName);
-    return users.map((e) => Recipe.fromMap(e.data)).toList();
-  }
+  // Stream<List<Document>> watchRecipesRealtime() {
+  //   return _recipeAPI.watchRecipesRealtime();
+  // }
 
   Future<List<Recipe>> getRecipes() async {
     final recipeList = await _recipeAPI.getRecipes();
     return recipeList.map((recipe) => Recipe.fromMap(recipe.data)).toList();
-  }
-
-  Future<Recipe> getRecipeById(String id) async {
-    final recipe = await _recipeAPI.getRecipeById(id);
-    return Recipe.fromMap(recipe.data);
   }
 
   void shareRecipe({
@@ -69,5 +75,10 @@ class RecipeController extends StateNotifier<bool> {
     final res = await _recipeAPI.shareRecipe(recipeEntry);
     res.fold((l) => showSnackBar(context, l.message), (r) {});
     state = false;
+  }
+
+  Future<List<Recipe>> searchRecipes(String recipeName, int recipeType) async {
+    final recipes = await _recipeAPI.searchRecipes(recipeName, recipeType);
+    return recipes.map((e) => Recipe.fromMap(e.data)).toList();
   }
 }

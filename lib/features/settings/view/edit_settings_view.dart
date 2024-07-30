@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:papa_mama_recipe/features/auth/controller/auth_controller.dart';
 import 'package:papa_mama_recipe/features/settings/controller/settings_controller.dart';
-import 'package:papa_mama_recipe/models/user_model.dart';
 
 class EditSettingsScreen extends ConsumerStatefulWidget {
   static route() => MaterialPageRoute(
@@ -35,20 +34,6 @@ class _EditSettingsScreenState extends ConsumerState<EditSettingsScreen> {
     super.dispose();
   }
 
-  void updateSettings() {
-    final email = emailController.text;
-    final linkedUid = linkedUidController.text;
-    final settingsEntry = UserModel(
-        uid: '',
-        email: email,
-        linkedUid: linkedUid,
-        lastLoginDateTime: DateTime.now());
-    ref
-        .read(userControllerProvider.notifier)
-        .updateUserProfile(userModel: settingsEntry, context: context);
-    Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserDetailsProvider).value;
@@ -60,12 +45,12 @@ class _EditSettingsScreenState extends ConsumerState<EditSettingsScreen> {
     return
         // currentUser == null        ? const Loader()        :
         Scaffold(
-      appBar: AppBar(title: Text('設定'), actions: [
+      appBar: AppBar(title: const Text('設定'), actions: [
         IconButton(
           onPressed: () {
             ref.read(authControllerProvider.notifier).logout(context);
           },
-          icon: Icon(Icons.logout),
+          icon: const Icon(Icons.logout),
         ),
       ]),
       body: Padding(
@@ -73,21 +58,21 @@ class _EditSettingsScreenState extends ConsumerState<EditSettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 16.0),
-            Text(
+            const SizedBox(height: 16.0),
+            const Text(
               'メールアドレス',
               style: TextStyle(fontSize: 16.0),
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             TextFormField(
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'メールアドレスを入力してください',
               ),
             ),
-            SizedBox(height: 16.0),
-            Text(
+            const SizedBox(height: 16.0),
+            const Text(
               '本人UID',
               style: TextStyle(fontSize: 16.0),
             ),
@@ -101,18 +86,25 @@ class _EditSettingsScreenState extends ConsumerState<EditSettingsScreen> {
               '連携UID',
               style: TextStyle(fontSize: 16.0),
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             TextFormField(
               controller: linkedUidController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: '連携UIDを入力してください',
               ),
             ),
-            SizedBox(height: 32.0),
+            const SizedBox(height: 32.0),
             ElevatedButton(
-              onPressed: updateSettings,
-              child: Text('更新'),
+              onPressed: () {
+                ref.read(userControllerProvider.notifier).updateUserProfile(
+                    userModel: currentUser!.copyWith(
+                        email: emailController.text,
+                        linkedUid: linkedUidController.text,
+                        lastLoginDateTime: DateTime.now()),
+                    context: context);
+              },
+              child: const Text('更新'),
             ),
           ],
         ),

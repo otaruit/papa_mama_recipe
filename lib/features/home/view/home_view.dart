@@ -40,7 +40,6 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _page == 0 ? appBar : null,
       body: IndexedStack(
         index: _page,
         children: UIConstants.bottomTabBarPages,
@@ -60,6 +59,14 @@ class _HomeViewState extends State<HomeView> {
                         size: 30,
                         color: Pallete.redColor,
                       ),
+                label: 'こんしゅう',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.event_note_outlined,
+                  size: 30,
+                  color: Pallete.redColor,
+                ),
                 label: 'らいしゅう',
           ),
           BottomNavigationBarItem(
@@ -72,11 +79,11 @@ class _HomeViewState extends State<HomeView> {
           ),
           BottomNavigationBarItem(
                 icon: Icon(
-                  Icons.format_list_bulleted,
+                  Icons.settings,
                   size: 30,
                   color: Pallete.redColor,
                 ),
-                label: 'かいものリスト',
+                label: 'せってい',
               )
             ]));
   }

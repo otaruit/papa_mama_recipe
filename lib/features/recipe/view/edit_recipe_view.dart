@@ -4,7 +4,7 @@ import 'package:papa_mama_recipe/features/recipe/controller/recipe_controller.da
 import 'package:papa_mama_recipe/models/recipe_model.dart';
 
 class CreateRecipeScreen extends ConsumerStatefulWidget {
-  static Route route(Recipe recipe) {
+  static Route route(Recipe? recipe) {
     return MaterialPageRoute(
       builder: (context) => CreateRecipeScreen(
         initialRecipe: recipe,

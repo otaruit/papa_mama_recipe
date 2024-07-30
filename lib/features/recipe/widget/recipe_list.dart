@@ -1,27 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:papa_mama_recipe/common/error_page.dart';
-import 'package:papa_mama_recipe/common/loading_page.dart';
-import 'package:papa_mama_recipe/features/recipe/controller/recipe_controller.dart';
-import 'package:papa_mama_recipe/features/recipe/widget/recipe_card.dart';
+import 'package:papa_mama_recipe/features/recipe/view/edit_recipe_view.dart';
+import 'package:papa_mama_recipe/features/recipe/widget/recipe_stream_builder.dart';
 
-class RecipeList extends StatefulWidget {
-  const RecipeList({Key? key}) : super(key: key);
+class RecipeList extends ConsumerStatefulWidget {
+  RecipeList({Key? key}) : super(key: key);
 
   @override
   _RecipeListState createState() => _RecipeListState();
 }
 
-class _RecipeListState extends State<RecipeList> {
-  late TextEditingController searchController;
+class _RecipeListState extends ConsumerState<RecipeList> {
+  final searchController = TextEditingController();
+  bool isShowRecipes = false;
   late int recipeType = 0;
   String selectedCategory = 'メイン';
-
-  @override
-  void initState() {
-    super.initState();
-    searchController = TextEditingController();
-  }
 
   @override
   void dispose() {
@@ -84,67 +77,73 @@ class _RecipeListState extends State<RecipeList> {
         title: Text('レシピリスト'),
         actions: [
           IconButton(
-            onPressed: null,
+            onPressed: CreateRecipeScreen(
+              initialRecipe: Null,
+            ),
             icon: Icon(Icons.create),
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
+      body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey, // 枠線の色を指定
-                ),
-                borderRadius: BorderRadius.circular(8.0), // 枠線の角を丸める
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.grey, // 枠線の色を指定
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search recipes...',
-                        border: InputBorder.none, // 枠線を非表示にする
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              borderRadius: BorderRadius.circular(8.0), // 枠線の角を丸める
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'レシピ種別',
-              textAlign: TextAlign.left,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
-                _buildRadioButton('メイン', 0),
-                const SizedBox(width: 8),
-                _buildRadioButton('サイド', 1),
-                const SizedBox(width: 8),
-                _buildRadioButton('スープ', 2),
-                const SizedBox(width: 8),
-                _buildRadioButton('その他', 3),
+                Expanded(
+                  child: TextField(
+                    controller: searchController,
+                    onSubmitted: (value) {
+                      setState(() {
+                        isShowRecipes = value.isNotEmpty;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Search recipes...',
+                      border: InputBorder.none, // 枠線を非表示にする
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          Expanded(
-            child: YourRecipeListWidget(
-              selectedCategory: selectedCategory,
-            ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'レシピ種別',
+            textAlign: TextAlign.left,
           ),
-        ],
-      ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              _buildRadioButton('メイン', 0),
+              const SizedBox(width: 8),
+              _buildRadioButton('サイド', 1),
+              const SizedBox(width: 8),
+              _buildRadioButton('スープ', 2),
+              const SizedBox(width: 8),
+              _buildRadioButton('その他', 3),
+            ],
+          ),
+        ),
+        isShowRecipes
+            ? const SizedBox()
+            : Expanded(
+                child: StreamRecipeList(
+                recipeType: recipeType,
+                searchWord: searchController.text,
+              )),
+      ]),
     );
   }
 }

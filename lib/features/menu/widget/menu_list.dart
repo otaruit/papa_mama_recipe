@@ -7,7 +7,8 @@ import 'package:papa_mama_recipe/features/menu/widget/menu_card.dart';
 import 'package:papa_mama_recipe/models/menu_model.dart';
 
 class MenuList extends ConsumerWidget {
-  const MenuList({Key? key});
+  final int weekDecision;
+  const MenuList({required this.weekDecision, Key? key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,35 +25,46 @@ class MenuList extends ConsumerWidget {
       ),
     );
 
-    return ref.watch(getMenusProvider).when(
-          data: (menus) {
-            // menusをMap<int, Menu>に変換する
-            Map<int, Menu> menuMap = Map.fromIterable(
-              menus,
-              key: (menu) => menu.dayOfTheWeek,
-              value: (menu) => menu,
-            );
+    return Scaffold(
+        appBar: AppBar(
+          title:
+              weekDecision == 0 ? const Text('今週のメニュー') : const Text('来週のメニュー'),
+          actions: [
+            IconButton(
+              onPressed: null,
+              icon: Icon(Icons.create),
+            ),
+          ],
+        ),
+        body: ref.watch(getMenusProvider).when(
+              data: (menus) {
+                // menusをMap<int, Menu>に変換する
+                Map<int, Menu> menuMap = Map.fromIterable(
+                  menus,
+                  key: (menu) => menu.dayOfTheWeek,
+                  value: (menu) => menu,
+                );
 
-            // menuListの各要素を更新する
-            for (int i = 0; i < menuList.length; i++) {
-              int dayOfTheWeek = menuList[i].dayOfTheWeek;
-              if (menuMap.containsKey(dayOfTheWeek)) {
-                menuList[i] = menuMap[dayOfTheWeek]!;
-              }
-            }
+                // menuListの各要素を更新する
+                for (int i = 0; i < menuList.length; i++) {
+                  int dayOfTheWeek = menuList[i].dayOfTheWeek;
+                  if (menuMap.containsKey(dayOfTheWeek)) {
+                    menuList[i] = menuMap[dayOfTheWeek]!;
+                  }
+                }
 
-            return ListView.builder(
-              itemCount: menuList.length,
-              itemBuilder: (BuildContext context, int index) {
-                final menu = menuList[index];
-                return MenuCard(menu: menu);
+                return ListView.builder(
+                  itemCount: menuList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final menu = menuList[index];
+                    return MenuCard(menu: menu);
+                  },
+                );
               },
-            );
-          },
-          error: (error, stackTrace) => ErrorText(
-            error: error.toString(),
-          ),
-          loading: () => const Loader(),
-        );
+              error: (error, stackTrace) => ErrorText(
+                error: error.toString(),
+              ),
+              loading: () => const Loader(),
+            ));
   }
 }

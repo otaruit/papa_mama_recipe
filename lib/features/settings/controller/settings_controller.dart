@@ -33,7 +33,7 @@ class UserController extends StateNotifier<bool> {
     state = false;
     res.fold(
       (l) => showSnackBar(context, l.message),
-      (r) => Navigator.pop(context),
+      (r) => showSnackBar(context, '設定を更新しました'),
     );
   }
 }
