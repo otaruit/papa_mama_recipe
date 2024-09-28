@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:papa_mama_recipe/features/recipe/view/edit_recipe_view.dart';
 import 'package:papa_mama_recipe/features/recipe/widget/recipe_stream_builder.dart';
+import 'package:papa_mama_recipe/features/recipe/view/edit_recipe_view.dart';
 
 class RecipeList extends ConsumerStatefulWidget {
   RecipeList({Key? key}) : super(key: key);
@@ -77,9 +77,9 @@ class _RecipeListState extends ConsumerState<RecipeList> {
         title: Text('レシピリスト'),
         actions: [
           IconButton(
-            onPressed: CreateRecipeScreen(
-              initialRecipe: Null,
-            ),
+            onPressed: () {
+              Navigator.push(context, CreateRecipeScreen.route(null));
+            },
             icon: Icon(Icons.create),
           ),
         ],
